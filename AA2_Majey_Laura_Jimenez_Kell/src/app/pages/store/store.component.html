@@ -1,35 +1,33 @@
 <div class="container">
-    @let storeInfo = store();
-    @if(storeInfo) {
+  @let storeInfo = store();
+  @if (storeInfo) {
     <section class="store">
-        <h2>{{storeInfo.name}}</h2>
-        <h3>{{storeInfo.description}}</h3>
-        <h4>{{getScore(storeInfo.score)}}</h4>
-        <img src="{{storeInfo.image}}" alt="{{storeInfo.name}}" width="200" height="200">
+      <h2>{{ storeInfo.name }}</h2>
+      <h3>{{ storeInfo.description }}</h3>
+      <h4>{{ getScore(storeInfo.score) }}</h4>
+      <img [src]="storeInfo.image" [alt]="storeInfo.name" width="200" height="200">
     </section>
 
     <section class="store-product-list">
-        <h2>Productos de {{storeInfo.name}}:</h2>
-        <div class="card-container">
-            <!-- @let products = productList; -->
-            @for (item of productList(); track item.id) {
-            @defer (on viewport) {
+      <h2>Productos de {{ storeInfo.name }}:</h2>
+      <div class="card-container">
+        @for (item of products(); track item.id) {
+          @defer (on viewport) {
             <div class="card">
-                <h2>{{item.name ? item.name : 'Producto'}}</h2>
-                @if(item.images){
-                <img [ngSrc]="item.images" (alt)="item.name" width="100" height="100" priority>
-                }@else {
+              <h2>{{ item.name ? item.name : 'Producto' }}</h2>
+              @if (item.images) {
+                <img [src]="item.images" [alt]="item.name" width="100" height="100">
+              } @else {
                 <div class="imageEmpty"></div>
-                }
-                <h3>{{item.price ? item.price : 'Agotado'}}</h3>
-                <button appearance="primary" tuiButton (click)="goToDetail(item.id)">Detalle</button>
+              }
+              <h3>{{ item.price ? item.price : 'Agotado' }}</h3>
+              <button appearance="primary" tuiButton (click)="goToDetail(item.id)">Detalle</button>
             </div>
-            }@placeholder {
+          } @placeholder {
             <div class="card">Sin cargar</div>
-            }
-
-            }
-        </div>
+          }
+        }
+      </div>
     </section>
-    }
+  }
 </div>

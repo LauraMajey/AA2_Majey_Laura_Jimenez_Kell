@@ -27,9 +27,8 @@ export default class DetailsComponent {
 
   getScore = (score: number) => this.#storeService.getScore(score);
 
-  goToDetail(id: number) {
-    this.#router.navigate([`/detail/${id}`]);
-    window.location.reload();
+  goToDetail(id: number): void {
+  this.#router.navigate([`/details`, id]);
   }
 
 }
