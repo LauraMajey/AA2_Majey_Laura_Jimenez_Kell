@@ -1,0 +1,33 @@
+.banner {
+    display: flex;
+    height: 400px;
+    padding: 20px;
+    align-items: center;
+    justify-content: end;
+    gap: 100px;
+    width: 95.5%;
+}
+
+.banner-principal {
+    background-image: url("https://wallpapers.com/images/hd/windows-10-black-galaxy-tyu143o8nw203dgk.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    mix-blend-mode: difference;
+    color: #fff;
+
+
+    h1 {
+        width: 100%;
+        font-weight: 800;
+        font-size: xx-large;
+    }
+}
+
+.imageEmpty {
+    width: 100px;
+    height: 100px;
+    background-color: gray;
+    border-radius: 10px;
+    margin: auto;
+}

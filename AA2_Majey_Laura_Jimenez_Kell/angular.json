@@ -9,7 +9,7 @@
         "@schematics/angular:component": {
           "inlineTemplate": true,
           "inlineStyle": true,
-          "skipTests": true
+          "skipTests": false
         },
         "@schematics/angular:class": {
           "skipTests": true
@@ -30,7 +30,7 @@
           "skipTests": true
         },
         "@schematics/angular:service": {
-          "skipTests": true
+          "skipTests": false
         }
       },
       "root": "",
@@ -98,5 +98,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "061f360e-a13d-4415-ba18-3bdb3151b74d"
   }
 }
