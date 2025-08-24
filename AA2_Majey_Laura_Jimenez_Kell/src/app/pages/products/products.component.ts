@@ -5,7 +5,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
-  images?: string;
+  image_url?: string;
 }
 
 @Component({

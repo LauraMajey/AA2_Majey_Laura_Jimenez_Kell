@@ -1,16 +1,16 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { TuiButton } from '@taiga-ui/core';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../interfaces/product';
-import { NgOptimizedImage } from '@angular/common';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [TuiButton, NgOptimizedImage],
+  imports: [CommonModule, TuiButton, NgOptimizedImage],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrls: ['./home.component.scss'] // ✅ plural correcto
 })
 export default class HomeComponent implements OnInit {
   #productService = inject(ProductService);
@@ -22,8 +22,10 @@ export default class HomeComponent implements OnInit {
   }
 
   getProducts() {
-    this.productList.set(this.#productService.getProducts().filter(x => x.isPromotional));
+    this.productList.set(
+      this.#productService.getProducts().filter(x => x.isPromotional)
+    );
   }
 
-  goToDetail = (id: number) => this.#router.navigate([`/detail/${id}`]);
+  goToDetail = (id: number) => this.#router.navigate([`/details/${id}`]); // ✅ coincide con Store
 }

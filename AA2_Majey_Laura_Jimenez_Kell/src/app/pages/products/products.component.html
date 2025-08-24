@@ -38,8 +38,8 @@
           <div class="card">
             <h2>{{item.name ? item.name : 'Producto'}}</h2>
 
-            @if(item.images){
-              <img [ngSrc]="item.images" (alt)="item.name" width="100" height="100" priority>
+            @if(item.image_url){
+              <img [ngSrc]="item.image_url" [alt]="item.name" width="100" height="100" priority>
             }@else {
               <div class="imageEmpty"></div>
             }

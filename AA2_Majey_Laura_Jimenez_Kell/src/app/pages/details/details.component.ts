@@ -14,7 +14,7 @@ import { TuiButton } from '@taiga-ui/core';
   templateUrl: './details.component.html',
   styleUrl: './details.component.scss'
 })
-export default class DetailsComponent {
+export  class DetailsComponent {
 
   #activatedRoute = inject(ActivatedRoute);
   #productService = inject(ProductService);

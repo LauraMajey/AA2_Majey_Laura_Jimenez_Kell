@@ -3,7 +3,10 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  images: string;
+  brand: string;
+  type:string;
+  release_date:string;
+  image_url: string;
   isPromotional: boolean;
   score?: number;
   likes?: number;
