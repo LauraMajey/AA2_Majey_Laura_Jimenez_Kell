@@ -7,7 +7,7 @@ export interface Product {
   type:string;
   release_date:string;
   image_url: string;
-  isPromotional: boolean;
+  link: string;
   score?: number;
   likes?: number;
   idStore: number;

@@ -1,31 +1,56 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TuiButton } from '@taiga-ui/core';
+import { RouterModule } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Product } from '../../interfaces/product';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, TuiButton, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, TuiButton, RouterModule, FormsModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'] // ✅ plural correcto
+  styleUrls: ['./home.component.scss']
 })
-export default class HomeComponent implements OnInit {
+export default class HomeComponent {
   #productService = inject(ProductService);
-  #router = inject(Router);
-  protected productList = signal<Product[]>([]);
 
-  ngOnInit(): void {
-    this.getProducts();
+  public allProducts: Product[] = [];
+  public filteredProducts: Product[] = [];
+
+  public searchTerm = '';
+  public selectedType = '';
+  public selectedBrand = '';
+  public brands: string[] = [];
+  public types: string[] = [];
+
+  ngOnInit() {
+    this.loadProducts();
   }
 
-  getProducts() {
-    this.productList.set(
-      this.#productService.getProducts().filter(x => x.isPromotional)
-    );
+  loadProducts() {
+    this.allProducts = this.#productService.getProducts();
+    this.brands = [...new Set(this.allProducts.map(p => p.brand))].sort();
+    this.types = [...new Set(this.allProducts.map(p => p.type))].sort();
+    this.applyFilters();
   }
 
-  goToDetail = (id: number) => this.#router.navigate([`/details/${id}`]); // ✅ coincide con Store
+  applyFilters() {
+    const term = this.searchTerm.trim().toLowerCase();
+    const type = this.selectedType.trim().toLowerCase();
+    const brand = this.selectedBrand.trim().toLowerCase();
+
+    const hasFilters = term || type || brand;
+
+    let result = this.allProducts
+      .filter(p =>
+        (!type || p.type.toLowerCase() === type) &&
+        (!brand || p.brand.toLowerCase() === brand) &&
+        (p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term))
+      )
+      .sort((a, b) => new Date(b.release_date).getTime() - new Date(a.release_date).getTime());
+
+    this.filteredProducts = hasFilters ? result : result.slice(0, 5);
+  }
 }

@@ -1,62 +1,73 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ProductService } from '../../services/product.service';
+import { StoreService } from '../../services/store.service';
+import { Product } from '../../interfaces/product';
+import { Store } from '../../interfaces/store';
 import { CommonModule } from '@angular/common';
 import { NgOptimizedImage } from '@angular/common';
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image_url?: string;
-}
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, RouterModule, FormsModule],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductsComponent {
-  // lista de productos
-  products = signal<Product[]>([
-    { id: 1, name: 'Producto A', price: 12000 },
-    { id: 2, name: 'Producto B', price: 18500 },
-    { id: 3, name: 'Producto C', price: 9900 }
-  ]);
+export default class ProductsComponent implements OnInit {
+  #productService = inject(ProductService);
+  #storeService = inject(StoreService);
+  #route = inject(ActivatedRoute);
+  #router = inject(Router); // Inject the Router service
 
-  // búsqueda por texto
-  searchTerm = signal('');
+  products = signal<Product[]>([]);
+  stores = signal<Store[]>([]);
+  brands = signal<string[]>([]);
+  
+  filteredProducts = signal<Product[]>([]);
 
-  // rango dinámico de precios
-  min = computed(() => Math.min(...this.products().map(p => p.price)));
-  max = computed(() => Math.max(...this.products().map(p => p.price)));
+  selectedStore: string = '';
+  selectedBrand: string = '';
 
-  // sliders de precio
-  lower = signal(this.min());
-  upper = signal(this.max());
+  ngOnInit(): void {
+    this.products.set(this.#productService.getProducts());
+    this.stores.set(this.#storeService.getStores());
+    this.brands.set([...new Set(this.products().map(p => p.brand))]);
 
-  // productos filtrados (búsqueda + rango)
-  filteredProducts = computed(() =>
-    this.products().filter(p =>
-      p.name?.toLowerCase().includes(this.searchTerm().toLowerCase()) &&
-      p.price >= this.lower() &&
-      p.price <= this.upper()
-    )
-  );
-
-  filterProduct(event: KeyboardEvent): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searchTerm.set(value);
+    this.#route.queryParams.subscribe(params => {
+      this.selectedStore = params['storeId'] || '';
+      this.selectedBrand = params['brand'] || '';
+      this.filterProducts();
+    });
+  }
+  
+  private filterProducts(): void {
+    const filtered = this.products().filter(p => {
+      const byStore = this.selectedStore ? p.idStore === +this.selectedStore : true;
+      const byBrand = this.selectedBrand ? p.brand === this.selectedBrand : true;
+      return byStore && byBrand;
+    });
+    this.filteredProducts.set(filtered);
   }
 
   applyFilters(): void {
-
+    this.#router.navigate(
+      [],
+      {
+        relativeTo: this.#route,
+        queryParams: {
+          storeId: this.selectedStore || null,
+          brand: this.selectedBrand || null
+        },
+        queryParamsHandling: 'merge'
+      }
+    );
   }
 
-  getTotal(): number {
-    return this.products().reduce((sum, p) => sum + p.price, 0);
-  }
-
-  goToDetail(id: number) {
-    console.log('Ir al detalle del producto', id);
+  
+  addProduct(): void {
+    this.#router.navigate(['/add-product']);
   }
 }

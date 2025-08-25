@@ -1,51 +1,33 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { Store } from '../../interfaces/store';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { StoreService } from '../../services/store.service';
-import { Product } from '../../interfaces/product';
-import { ProductService } from '../../services/product.service';
+import { Store } from '../../interfaces/store';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { TuiButton } from '@taiga-ui/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-store',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, NgOptimizedImage, TuiButton, RouterModule],
   templateUrl: './store.component.html',
   styleUrls: ['./store.component.scss']
 })
-export class StoreComponent {
+export default class StoreComponent implements OnInit {
+  #storeService = inject(StoreService);
+  #router = inject(Router);
 
-  store = signal<Store | null>(null);
-  products = signal<Product[]>([]);
-
-  constructor(
-    private storeService: StoreService,
-    private productService: ProductService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  protected stores = signal<Store[]>([]);
 
   ngOnInit(): void {
-    // obtenemos el id desde la URL: /store/:id
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    // cargamos la tienda con ese id
-    const selectedStore = this.storeService.getStore(id);
-    this.store.set(selectedStore || null);
-
-    // cargamos los productos de esa tienda
-    if (selectedStore) {
-      this.products.set(
-        this.productService.getProducts().filter(p => p.idStore === id)
-      );
-    }
-  }
-
-  goToDetail(id: number): void {
-    this.router.navigate(['/details', id]);
+    this.stores.set(this.#storeService.getStores());
   }
 
   getScore(score: number): string {
-    return `Calificación: ${score}/5`;
+    return this.#storeService.getScore(score);
+  }
+
+  goToStore(id: number) {
+    this.#router.navigate([`/store/${id}`]);
   }
 }
